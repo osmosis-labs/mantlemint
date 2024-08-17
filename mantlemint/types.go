@@ -1,8 +1,8 @@
 package mantlemint
 
 import (
-// "github.com/tendermint/tendermint/state"
-// tendermint "github.com/tendermint/tendermint/types"
+"github.com/cometbft/cometbft/state"
+tendermint "github.com/cometbft/cometbft/types"
 )
 
 type Mantlemint interface {
