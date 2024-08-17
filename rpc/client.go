@@ -2,7 +2,6 @@ package rpc
 
 import (
 	"context"
-	"fmt"
 
 	abcicli "github.com/cometbft/cometbft/abci/client"
 	abci "github.com/cometbft/cometbft/abci/types"
@@ -23,6 +22,16 @@ type MantlemintRPCClient struct {
 func NewRpcClient(client abcicli.Client) rpcclient.Client {
 	return &MantlemintRPCClient{client: client}
 }
+
+func (m *MantlemintRPCClient) Header(ctx context.Context, height *int64) (*coretypes.ResultHeader, error) {
+    panic("implement me")
+}
+
+
+func (m *MantlemintRPCClient) HeaderByHash(ctx context.Context, hash bytes.HexBytes) (*coretypes.ResultHeader, error) {
+	panic("implement me")
+}
+
 
 func (m *MantlemintRPCClient) ABCIInfo(ctx context.Context) (*coretypes.ResultABCIInfo, error) {
 	panic("implement me")
@@ -156,9 +165,6 @@ func (m *MantlemintRPCClient) Health(ctx context.Context) (*coretypes.ResultHeal
 
 func (m *MantlemintRPCClient) Block(ctx context.Context, height *int64) (*coretypes.ResultBlock, error) {
 	return core.Block(nil, height)
-	fmt.Println("is it you")
-
-	panic("implement me")
 }
 
 func (m *MantlemintRPCClient) BlockByHash(ctx context.Context, hash []byte) (*coretypes.ResultBlock, error) {
