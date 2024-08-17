@@ -3,8 +3,10 @@ package hld
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"sync"
 
+	"github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/terra-money/mantlemint/lib"
 
 	dbm "github.com/cometbft/cometbft-db"
@@ -29,6 +31,7 @@ var (
 )
 
 var _ HLD = (*HeightLimitedDB)(nil)
+// var _ types.CommitKVStore = (*HeightLimitedDB)(nil)
 
 type HeightLimitedDB struct {
 	odb         HeightLimitEnabledDB
@@ -149,7 +152,7 @@ func (hld *HeightLimitedDB) Delete(key []byte) error {
 
 // DeleteSync deletes the key, and flushes the delete to storage before returning.
 func (hld *HeightLimitedDB) DeleteSync(key []byte) error {
-	return hld.Delete(key)
+	return hld.odb.DeleteSync(hld.writeHeight, key)
 }
 
 // Iterator returns an iterator over a domain of keys, in ascending order. The caller must call
@@ -236,4 +239,28 @@ func (hld *HeightLimitedDB) Debug(debugType int, key []byte, value []byte) {
 
 	fmt.Printf("<%s @ %d> %s", debugPrefix, actualKeyHeight, keyFamily)
 	fmt.Printf("\n")
+}
+
+func (hld *HeightLimitedDB) CacheWrap() types.CacheWrap {
+	panic("unimplemented")
+}
+
+func (hld *HeightLimitedDB) CacheWrapWithTrace(w io.Writer, tc types.TraceContext) types.CacheWrap {
+	panic("unimplemented")
+}
+
+// Commit() CommitID
+// LastCommitID() CommitID
+// SetCommitting()
+// UnsetCommitting()
+
+// SetPruning(pruningtypes.PruningOptions)
+// GetPruning() pruningtypes.PruningOptions
+
+func (hld *HeightLimitedDB) Commit() types.CommitID {
+	panic("unimplemented")
+}
+
+func (hld *HeightLimitedDB) LastCommitID() types.CommitID {
+	panic("unimplemented")
 }
