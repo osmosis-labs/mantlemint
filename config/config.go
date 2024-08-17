@@ -6,11 +6,12 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	// sdk "github.com/cosmos/cosmos-sdk/types"
-	// "github.com/cosmos/cosmos-sdk/x/crisis"
-	// "github.com/spf13/pflag"
-	// "github.com/spf13/viper"
-	// terra "github.com/terra-money/core/v2/app"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/crisis"
+	"github.com/osmosis-labs/osmosis/v25/app"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 )
 
 type Config struct {
@@ -44,7 +45,7 @@ func newConfig() Config {
 		// GenesisPath sets the location of genesis
 		GenesisPath: getValidEnv("GENESIS_PATH"),
 
-		// Home sets where the default terra home is.
+		// Home sets where the default osmosis home is.
 		Home: getValidEnv("MANTLEMINT_HOME"),
 
 		// ChainID sets expected chain id for this mantlemint instance
@@ -62,11 +63,11 @@ func newConfig() Config {
 			return strings.Split(endpoints, ",")
 		}(),
 
-		// MantlemintDB is the db name for mantlemint. Defaults to terra.DefaultHome
+		// MantlemintDB is the db name for mantlemint. Defaults to osmosis.DefaultHome
 		MantlemintDB: func() string {
 			mantlemintDB := getValidEnv("MANTLEMINT_DB")
 			if mantlemintDB == "" {
-				return terra.DefaultNodeHome
+				return app.DefaultNodeHome
 			} else {
 				return mantlemintDB
 			}
