@@ -6,6 +6,7 @@ toolchain go1.21.13
 
 require (
 	cosmossdk.io/math v1.3.0
+	github.com/CosmWasm/wasmd v0.45.1-0.20231128163306-4b9b61faeaa3
 	github.com/cometbft/cometbft v0.38.0
 	github.com/cometbft/cometbft-db v0.11.0
 	github.com/cosmos/cosmos-sdk v0.50.9
@@ -44,7 +45,6 @@ require (
 	filippo.io/edwards25519 v1.0.0 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.1 // indirect
-	github.com/CosmWasm/wasmd v0.45.1-0.20231128163306-4b9b61faeaa3 // indirect
 	github.com/CosmWasm/wasmvm v1.5.2 // indirect
 	github.com/DataDog/zstd v1.5.0 // indirect
 	github.com/Masterminds/semver v1.5.0 // indirect

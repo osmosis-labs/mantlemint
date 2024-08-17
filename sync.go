@@ -4,34 +4,41 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
+
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	tmlog "github.com/cometbft/cometbft/libs/log"
+	"github.com/cometbft/cometbft/proxy"
+	tendermint "github.com/cometbft/cometbft/types"
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/gorilla/mux"
+	osmosis "github.com/osmosis-labs/osmosis/v25/app"
+	appkeepers "github.com/osmosis-labs/osmosis/v25/app/keepers"
+	appparams "github.com/osmosis-labs/osmosis/v25/app/params"
+
+	// coreconfig "github.com/osmosis-labs/osmosis/v25/app/config"
 	"io/ioutil"
 	"log"
 	"os"
 	"runtime/debug"
-	// wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	// "github.com/cosmos/cosmos-sdk/baseapp"
-	// sdk "github.com/cosmos/cosmos-sdk/types"
-	// "github.com/gorilla/mux"
-	// "github.com/spf13/viper"
-	// tmlog "github.com/tendermint/tendermint/libs/log"
-	// "github.com/tendermint/tendermint/proxy"
-	// tendermint "github.com/tendermint/tendermint/types"
-	// terra "github.com/terra-money/core/v2/app"
-	// coreconfig "github.com/terra-money/core/v2/app/config"
-	// wasmconfig "github.com/terra-money/core/v2/app/wasmconfig"
-	// blockFeeder "github.com/terra-money/mantlemint/block_feed"
-	// "github.com/terra-money/mantlemint/config"
-	// "github.com/terra-money/mantlemint/db/heleveldb"
-	// "github.com/terra-money/mantlemint/db/hld"
-	// "github.com/terra-money/mantlemint/db/safe_batch"
-	// "github.com/terra-money/mantlemint/indexer"
-	// "github.com/terra-money/mantlemint/indexer/block"
-	// "github.com/terra-money/mantlemint/indexer/richlist"
-	// "github.com/terra-money/mantlemint/indexer/tx"
-	// "github.com/terra-money/mantlemint/mantlemint"
-	// "github.com/terra-money/mantlemint/rpc"
-	// "github.com/terra-money/mantlemint/store/rootmulti"
-	// tmdb "github.com/tendermint/tm-db"
+
+	"github.com/spf13/viper"
+
+	// wasmconfig "github.com/osmosis-labs/core/v2/app/wasmconfig"
+
+	dbm "github.com/cometbft/cometbft-db"
+	blockFeeder "github.com/osmosis-labs/mantlemint/block_feed"
+	"github.com/osmosis-labs/mantlemint/config"
+	"github.com/osmosis-labs/mantlemint/db/heleveldb"
+	"github.com/osmosis-labs/mantlemint/db/hld"
+	"github.com/osmosis-labs/mantlemint/db/safe_batch"
+	"github.com/osmosis-labs/mantlemint/indexer"
+	"github.com/osmosis-labs/mantlemint/indexer/block"
+	"github.com/osmosis-labs/mantlemint/indexer/richlist"
+	"github.com/osmosis-labs/mantlemint/indexer/tx"
+	"github.com/osmosis-labs/mantlemint/mantlemint"
+	"github.com/osmosis-labs/mantlemint/rpc"
+	"github.com/osmosis-labs/mantlemint/store/rootmulti"
 )
 
 // initialize mantlemint for v0.34.x
@@ -40,19 +47,20 @@ func main() {
 	mantlemintConfig.Print()
 
 	sdkConfig := sdk.GetConfig()
-	sdkConfig.SetCoinType(coreconfig.CoinType)
-	accountPubKeyPrefix := coreconfig.AccountAddressPrefix + "pub"
-	validatorAddressPrefix := coreconfig.AccountAddressPrefix + "valoper"
-	validatorPubKeyPrefix := coreconfig.AccountAddressPrefix + "valoperpub"
-	consNodeAddressPrefix := coreconfig.AccountAddressPrefix + "valcons"
-	consNodePubKeyPrefix := coreconfig.AccountAddressPrefix + "valconspub"
+	// TODO: do we need this?
+	// sdkConfig.SetCoinType(appkeepers.CoinType)
+	accountPubKeyPrefix := appkeepers.AccountAddressPrefix + "pub"
+	validatorAddressPrefix := appkeepers.AccountAddressPrefix + "valoper"
+	validatorPubKeyPrefix := appkeepers.AccountAddressPrefix + "valoperpub"
+	consNodeAddressPrefix := appkeepers.AccountAddressPrefix + "valcons"
+	consNodePubKeyPrefix := appkeepers.AccountAddressPrefix + "valconspub"
 
-	sdkConfig.SetBech32PrefixForAccount(coreconfig.AccountAddressPrefix, accountPubKeyPrefix)
+	sdkConfig.SetBech32PrefixForAccount(appkeepers.AccountAddressPrefix, accountPubKeyPrefix)
 	sdkConfig.SetBech32PrefixForValidator(validatorAddressPrefix, validatorPubKeyPrefix)
 	sdkConfig.SetBech32PrefixForConsensusNode(consNodeAddressPrefix, consNodePubKeyPrefix)
 	sdkConfig.SetAddressVerifier(wasmtypes.VerifyAddressLen())
 
-	err := sdk.RegisterDenom(coreconfig.BondDenom, sdk.NewDecWithPrec(1, 6))
+	err := sdk.RegisterDenom(appparams.DefaultBondDenom, sdk.NewDecWithPrec(1, 6))
 	if err != nil {
 		panic(err)
 	}
@@ -78,13 +86,13 @@ func main() {
 	batched := safe_batch.NewSafeBatchDB(hldb)
 	batchedOrigin := batched.(safe_batch.SafeBatchDBCloser)
 	logger := tmlog.NewTMLogger(os.Stdout)
-	codec := terra.MakeEncodingConfig()
+	codec := osmosis.MakeEncodingConfig()
 
 	// customize CMS to limit kv store's read height on query
 	cms := rootmulti.NewStore(batched, hldb, logger)
 	vpr := viper.GetViper()
 
-	var app = terra.NewTerraApp(
+	var app = osmosis.NewOsmosisApp(
 		logger,
 		batched,
 		nil,
@@ -94,7 +102,7 @@ func main() {
 		0,
 		codec,
 		vpr,
-		wasmconfig.GetConfig(vpr),
+		appkeepers.GetConfig(vpr),
 		fauxMerkleModeOpt,
 		func(ba *baseapp.BaseApp) {
 			ba.SetCMS(cms)
@@ -213,7 +221,7 @@ func main() {
 	} else if cBlockFeed, blockFeedErr := blockFeed.Subscribe(0); blockFeedErr != nil {
 		panic(blockFeedErr)
 	} else {
-		var rollbackBatch tmdb.Batch
+		var rollbackBatch dbm.Batch
 		for {
 			feed := <-cBlockFeed
 
