@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 
-	// abci "github.com/tendermint/tendermint/abci/types"
-	// tm "github.com/tendermint/tendermint/types"
+	abci "github.com/cometbft/cometbft/abci/types"
+	tm "github.com/cometbft/cometbft/types"
 
-	// sdk "github.com/cosmos/cosmos-sdk/types"
-	// authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	// tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	// terra "github.com/terra-money/core/v2/app"
-	// "github.com/terra-money/mantlemint/config"
-	// "github.com/terra-money/mantlemint/db/safe_batch"
-	// "github.com/terra-money/mantlemint/indexer"
-	// "github.com/terra-money/mantlemint/mantlemint"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/osmosis-labs/mantlemint/config"
+	"github.com/osmosis-labs/mantlemint/db/safe_batch"
+	"github.com/osmosis-labs/mantlemint/indexer"
+	"github.com/osmosis-labs/mantlemint/mantlemint"
+	"github.com/osmosis-labs/osmosis/v25/app"
 )
 
 const (
@@ -36,7 +36,7 @@ var cfg = config.GetConfig()
 // for now, we only handle a richlist for LUNA
 var richlist = NewRichlist(0, cfg.RichlistThreshold)
 
-var IndexRichlist = indexer.CreateIndexer(func(indexerDB safe_batch.SafeBatchDB, block *tm.Block, blockID *tm.BlockID, evc *mantlemint.EventCollector, app *terra.TerraApp) (err error) {
+var IndexRichlist = indexer.CreateIndexer(func(indexerDB safe_batch.SafeBatchDB, block *tm.Block, blockID *tm.BlockID, evc *mantlemint.EventCollector, app *app.OsmosisApp) (err error) {
 	height := uint64(block.Height)
 
 	// skip if this indexer is disabled or at genesis height. genesis block cannot be parsed here.
@@ -108,7 +108,7 @@ var IndexRichlist = indexer.CreateIndexer(func(indexerDB safe_batch.SafeBatchDB,
 	return indexerDB.Set(getDefaultKey(height), richlistJSON)
 })
 
-func generateRichlistFromState(indexerDB safe_batch.SafeBatchDB, block *tm.Block, blockID *tm.BlockID, evc *mantlemint.EventCollector, app *terra.TerraApp, height uint64, threshold sdk.Coin) (list *Richlist, err error) {
+func generateRichlistFromState(indexerDB safe_batch.SafeBatchDB, block *tm.Block, blockID *tm.BlockID, evc *mantlemint.EventCollector, app *app.OsmosisApp, height uint64, threshold sdk.Coin) (list *Richlist, err error) {
 	list = NewRichlist(height, &threshold)
 
 	ctx := app.NewContext(true, tmproto.Header{Height: int64(height)})

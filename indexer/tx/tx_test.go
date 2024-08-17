@@ -2,32 +2,34 @@ package tx
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"testing"
 
-	// "github.com/stretchr/testify/assert"
-	// tmjson "github.com/tendermint/tendermint/libs/json"
-	// tendermint "github.com/tendermint/tendermint/types"
-	// tmdb "github.com/tendermint/tm-db"
-	// "github.com/terra-money/mantlemint/db/safe_batch"
-	// "github.com/terra-money/mantlemint/mantlemint"
+	"github.com/osmosis-labs/mantlemint/db/safe_batch"
+	"github.com/osmosis-labs/mantlemint/mantlemint"
+	"github.com/stretchr/testify/assert"
+
+	cbftdb "github.com/cometbft/cometbft-db"
+	cbftjson "github.com/cometbft/cometbft/libs/json"
+	"github.com/cometbft/cometbft/types"
 )
 
 func TestIndexTx(t *testing.T) {
-	db := tmdb.NewMemDB()
-	block := &tendermint.Block{}
+	db := cbftdb.NewMemDB()
+	block := &types.Block{}
 	blockFile, _ := os.Open("../fixtures/block_4814775.json")
 	blockJSON, _ := ioutil.ReadAll(blockFile)
-	if err := tmjson.Unmarshal(blockJSON, block); err != nil {
+	if err := cbftjson.Unmarshal(blockJSON, block); err != nil {
 		t.Fail()
 	}
 
 	eventFile, _ := os.Open("../fixtures/response_4814775.json")
-	eventJSON, _ := ioutil.ReadAll(eventFile)
+	eventJSON, _ := io.ReadAll(eventFile)
 	evc := mantlemint.NewMantlemintEventCollector()
-	event := tendermint.EventDataTx{}
-	if err := tmjson.Unmarshal(eventJSON, &event.Result); err != nil {
+	event := types.EventDataTx{}
+	if err := cbftjson.Unmarshal(eventJSON, &event.Result); err != nil {
 		panic(err)
 	}
 

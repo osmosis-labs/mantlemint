@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 
-	// tmjson "github.com/tendermint/tendermint/libs/json"
-	// tm "github.com/tendermint/tendermint/types"
-	// terra "github.com/terra-money/core/v2/app"
-	// "github.com/terra-money/mantlemint/db/safe_batch"
-	// "github.com/terra-money/mantlemint/indexer"
-	// "github.com/terra-money/mantlemint/mantlemint"
+	cbftjson "github.com/cometbft/cometbft/libs/json"
+	"github.com/osmosis-labs/mantlemint/db/safe_batch"
+	"github.com/osmosis-labs/mantlemint/indexer"
+	"github.com/osmosis-labs/mantlemint/mantlemint"
+	"github.com/osmosis-labs/osmosis/v25/app"
+	cbfttypes "github.com/tendermint/tendermint/types"
 )
 
-var cdc = terra.MakeEncodingConfig()
+var cdc = app.MakeEncodingConfig()
 
-var IndexTx = indexer.CreateIndexer(func(batch safe_batch.SafeBatchDB, block *tm.Block, blockID *tm.BlockID, evc *mantlemint.EventCollector, _ *terra.TerraApp) error {
+var IndexTx = indexer.CreateIndexer(func(batch safe_batch.SafeBatchDB, block *cbfttypes.Block, blockID *cbfttypes.BlockID, evc *mantlemint.EventCollector, _ *app.OsmosisApp) error {
 	// encoder; proto -> mem -> json
 	txDecoder := cdc.TxConfig.TxDecoder()
 	jsonEncoder := cdc.TxConfig.TxJSONEncoder()
@@ -39,7 +39,7 @@ var IndexTx = indexer.CreateIndexer(func(batch safe_batch.SafeBatchDB, block *tm
 
 		// handle response -> json
 		response := ToResponseDeliverTxJSON(evc.ResponseDeliverTxs[txIndex])
-		responseJSON, responseMarshalErr := tmjson.Marshal(response)
+		responseJSON, responseMarshalErr := cbftjson.Marshal(response)
 
 		if responseMarshalErr != nil {
 			return responseMarshalErr
@@ -75,7 +75,7 @@ var IndexTx = indexer.CreateIndexer(func(batch safe_batch.SafeBatchDB, block *tm
 
 	// 1. byHash -- matching the interface for /cosmos/tx/v1beta1/txs/{hash}
 	for txIndex, txRecord := range txRecords {
-		txRecordJSON, marshalErr := tmjson.Marshal(txRecord)
+		txRecordJSON, marshalErr := cbftjson.Marshal(txRecord)
 		if marshalErr != nil {
 			return marshalErr
 		}
@@ -87,7 +87,7 @@ var IndexTx = indexer.CreateIndexer(func(batch safe_batch.SafeBatchDB, block *tm
 	}
 
 	// 2. byHeight -- custom endpoint
-	byHeightJSON, byHeightErr := tmjson.Marshal(byHeightPayload)
+	byHeightJSON, byHeightErr := cbftjson.Marshal(byHeightPayload)
 	if byHeightErr != nil {
 		return byHeightErr
 	}

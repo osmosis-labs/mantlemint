@@ -6,16 +6,17 @@ import (
 	"runtime"
 
 	"github.com/gorilla/mux"
-	// tm "github.com/tendermint/tendermint/types"
-	// tmdb "github.com/tendermint/tm-db"
-	// terra "github.com/terra-money/core/v2/app"
-	// "github.com/terra-money/mantlemint/db/safe_batch"
-	// "github.com/terra-money/mantlemint/mantlemint"
+
+	cbftdb "github.com/cometbft/cometbft-db"
+	cbfttypes "github.com/cometbft/cometbft/types"
+	"github.com/osmosis-labs/mantlemint/db/safe_batch"
+	"github.com/osmosis-labs/mantlemint/mantlemint"
+	"github.com/osmosis-labs/osmosis/v25/app"
 )
 
-type IndexFunc func(indexerDB safe_batch.SafeBatchDB, block *tm.Block, blockId *tm.BlockID, evc *mantlemint.EventCollector, app *terra.TerraApp) error
+type IndexFunc func(indexerDB safe_batch.SafeBatchDB, block *cbfttypes.Block, blockId *cbfttypes.BlockID, evc *mantlemint.EventCollector, app *app.OsmosisApp) error
 type ClientHandler func(w http.ResponseWriter, r *http.Request) error
-type RESTRouteRegisterer func(router *mux.Router, indexerDB tmdb.DB)
+type RESTRouteRegisterer func(router *mux.Router, indexerDB cbftdb.DB)
 
 func CreateIndexer(idf IndexFunc) IndexFunc {
 	return idf
