@@ -10,6 +10,7 @@ require (
 	github.com/cometbft/cometbft v0.38.0
 	github.com/cometbft/cometbft-db v0.11.0
 	github.com/cosmos/cosmos-sdk v0.50.9
+	github.com/cosmos/gogoproto v1.4.11
 	github.com/cosmos/iavl v1.1.2-0.20240405173644-e52f7630d3b7
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/snappy v0.0.4
@@ -23,7 +24,6 @@ require (
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.9.0
 	github.com/tendermint/tendermint v0.34.19
-	github.com/tendermint/tm-db v0.6.7
 	github.com/terra-money/mantlemint v1.1.0
 	gotest.tools v2.2.0+incompatible
 )
@@ -72,8 +72,6 @@ require (
 	github.com/cosmos/cosmos-proto v1.0.0-beta.3 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gogogateway v1.2.0 // indirect
-	github.com/cosmos/gogoproto v1.4.11 // indirect
-	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.3 // indirect
 	github.com/cosmos/ibc-apps/modules/async-icq/v7 v7.1.1 // indirect
 	github.com/cosmos/ibc-go/modules/light-clients/08-wasm v0.1.1-ibc-go-v7.3-wasmvm-v1.5 // indirect

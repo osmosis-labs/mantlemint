@@ -25,8 +25,8 @@ import (
 	"github.com/osmosis-labs/mantlemint/db/hld"
 
 	// protoio "github.com/cosmos/gogoproto/io"
+	protoio "github.com/cosmos/gogoproto/io"
 	iavltree "github.com/cosmos/iavl"
-	protoio "github.com/gogo/protobuf/io"
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 )
