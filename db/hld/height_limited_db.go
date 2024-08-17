@@ -7,7 +7,7 @@ import (
 
 	"github.com/terra-money/mantlemint/lib"
 
-	// tmdb "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
 )
 
 const (
@@ -39,6 +39,12 @@ type HeightLimitedDB struct {
 	config      *HeightLimitedDBConfig
 
 	// writeBatch HeightLimitEnabledBatch
+}
+
+// Compact implements HLD.
+func (hld *HeightLimitedDB) Compact(start []byte, end []byte) error {
+	// TODO: do we need to implement this?
+	return nil
 }
 
 type HeightLimitedDBConfig struct {
@@ -151,7 +157,7 @@ func (hld *HeightLimitedDB) DeleteSync(key []byte) error {
 // from the first key, and a nil end iterates to the last key (inclusive).
 // CONTRACT: No writes may happen within a domain while an iterator exists over it.
 // CONTRACT: start, end readonly []byte
-func (hld *HeightLimitedDB) Iterator(start, end []byte) (tmdb.Iterator, error) {
+func (hld *HeightLimitedDB) Iterator(start, end []byte) (dbm.Iterator, error) {
 	return hld.odb.Iterator(hld.GetCurrentReadHeight(), start, end)
 }
 
@@ -160,7 +166,7 @@ func (hld *HeightLimitedDB) Iterator(start, end []byte) (tmdb.Iterator, error) {
 // iterates from the last key (inclusive), and a nil start iterates to the first key (inclusive).
 // CONTRACT: No writes may happen within a domain while an iterator exists over it.
 // CONTRACT: start, end readonly []byte
-func (hld *HeightLimitedDB) ReverseIterator(start, end []byte) (tmdb.Iterator, error) {
+func (hld *HeightLimitedDB) ReverseIterator(start, end []byte) (dbm.Iterator, error) {
 	return hld.odb.ReverseIterator(hld.GetCurrentReadHeight(), start, end)
 }
 
@@ -170,7 +176,7 @@ func (hld *HeightLimitedDB) Close() error {
 }
 
 // NewBatch creates a batch for atomic updates. The caller must call Batch.Close.
-func (hld *HeightLimitedDB) NewBatch() tmdb.Batch {
+func (hld *HeightLimitedDB) NewBatch() dbm.Batch {
 	// if hld.writeBatch != nil {
 	// 	// TODO: fix me
 	// 	return hld.writeBatch
