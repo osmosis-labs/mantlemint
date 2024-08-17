@@ -6,8 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	// "gotest.tools/assert"
-	// "github.com/stretchr/testify/assert"
+	"gotest.tools/assert"
 )
 
 func TestCacheBackend(t *testing.T) {
