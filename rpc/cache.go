@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"sync"
 
-	lru "github.com/hashicorp/golang-lru"
+	// lru "github.com/hashicorp/golang-lru"
 )
 
 type ResponseCache struct {
