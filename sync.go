@@ -6,7 +6,9 @@ import (
 	"fmt"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	cmtcfg "github.com/cometbft/cometbft/config"
 	tmlog "github.com/cometbft/cometbft/libs/log"
+	"github.com/cometbft/cometbft/node"
 	"github.com/cometbft/cometbft/proxy"
 	tendermint "github.com/cometbft/cometbft/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -105,10 +107,13 @@ func main() {
 			ba.SetCMS(cms)
 		},
 	)
+	
 
 	// create app...
 	var appCreator = mantlemint.NewConcurrentQueryClientCreator(app)
-	appConns := proxy.NewAppConns(appCreator)
+	metrics := node.DefaultMetricsProvider(cmtcfg.DefaultConfig().Instrumentation)
+	_, _, _, _, proxyMetrics := metrics("osmosis-1") //nolint:dogsled
+	appConns := proxy.NewAppConns(appCreator, proxyMetrics)
 	appConns.SetLogger(logger)
 	if startErr := appConns.OnStart(); startErr != nil {
 		panic(startErr)

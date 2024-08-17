@@ -66,6 +66,24 @@ type Store struct {
 	listeners map[types.StoreKey][]types.WriteListener
 }
 
+// SetCommitting implements types.CommitMultiStore.
+func (rs *Store) SetCommitting() {
+	// TODO: do we need to do anything here?
+	// no-op
+}
+
+// SetIAVLFastNodeModuleWhitelist implements types.CommitMultiStore.
+func (rs *Store) SetIAVLFastNodeModuleWhitelist(modulesToWhitelist []string) {
+	// TODO: do we need to do anything here?
+	// no-op
+}
+
+// UnsetCommitting implements types.CommitMultiStore.
+func (rs *Store) UnsetCommitting() {
+	// TODO: do we need to do anything here?
+	// no-op
+}
+
 var (
 	_ types.CommitMultiStore = (*Store)(nil)
 	_ types.Queryable        = (*Store)(nil)
