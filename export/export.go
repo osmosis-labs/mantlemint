@@ -14,7 +14,6 @@ import (
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	// "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	distrokeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	"github.com/cosmos/cosmos-sdk/x/distribution/types"
 	distrotypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
