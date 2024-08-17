@@ -5,19 +5,28 @@ import (
 	"os"
 	"strings"
 	"time"
-	// sdktypes "github.com/cosmos/cosmos-sdk/types"
-	// authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	// vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
-	// banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+
+	"cosmossdk.io/math"
+
+	sdktypes "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+
 	// "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	// distrotypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	// tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	// terra "github.com/terra-money/core/v2/app"
+	distrokeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
+	"github.com/cosmos/cosmos-sdk/x/distribution/types"
+	distrotypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
+	"github.com/osmosis-labs/osmosis/v25/app"
 )
 
 var IsAccountExportWorkerRunning = false
 
-func ExportAllAccounts(app *terra.TerraApp) error {
+func ExportAllAccounts(app *app.OsmosisApp) error {
 	if IsAccountExportWorkerRunning {
 		return fmt.Errorf("exporting is still running")
 	}
@@ -26,7 +35,7 @@ func ExportAllAccounts(app *terra.TerraApp) error {
 	return nil
 }
 
-func ExportCirculatingSupply(app *terra.TerraApp) (sdktypes.Int, error) {
+func ExportCirculatingSupply(app *app.OsmosisApp) (math.Int, error) {
 	height := app.LastBlockHeight()
 	ctx := app.NewContext(true, tmproto.Header{Height: height})
 	time := time.Now()
@@ -35,38 +44,39 @@ func ExportCirculatingSupply(app *terra.TerraApp) (sdktypes.Int, error) {
 		switch account.(type) {
 		case *vestingtypes.PeriodicVestingAccount:
 			v := account.(*vestingtypes.PeriodicVestingAccount)
-			totalVesting = totalVesting.Add(v.GetVestingCoins(time).AmountOf("uluna"))
+			totalVesting = totalVesting.Add(v.GetVestingCoins(time).AmountOf("uosmo"))
 		case *vestingtypes.ContinuousVestingAccount:
 			v := account.(*vestingtypes.ContinuousVestingAccount)
-			totalVesting = totalVesting.Add(v.GetVestingCoins(time).AmountOf("uluna"))
+			totalVesting = totalVesting.Add(v.GetVestingCoins(time).AmountOf("uosmo"))
 		case *vestingtypes.DelayedVestingAccount:
 			v := account.(*vestingtypes.DelayedVestingAccount)
-			totalVesting = totalVesting.Add(v.GetVestingCoins(time).AmountOf("uluna"))
+			totalVesting = totalVesting.Add(v.GetVestingCoins(time).AmountOf("uosmo"))
 		case *vestingtypes.PermanentLockedAccount:
 			v := account.(*vestingtypes.PermanentLockedAccount)
-			totalVesting = totalVesting.Add(v.GetVestingCoins(time).AmountOf("uluna"))
+			totalVesting = totalVesting.Add(v.GetVestingCoins(time).AmountOf("uosmo"))
 		default:
 			return false
 		}
 		return false
 	})
 	totalSupply, err := app.BankKeeper.SupplyOf(sdktypes.WrapSDKContext(ctx), &banktypes.QuerySupplyOfRequest{
-		Denom: "uluna",
+		Denom: "uosmo",
 	})
 	if err != nil {
-		return sdktypes.Int{}, err
+		return math.Int{}, err
 	}
-	lunaTotalSupply := totalSupply.Amount.Amount
-	communityPool, err := app.DistrKeeper.CommunityPool(sdktypes.WrapSDKContext(ctx), &distrotypes.QueryCommunityPoolRequest{})
+	totalSupply_ := totalSupply.Amount.Amount
+	querier := distrokeeper.NewQuerier(*app.DistrKeeper)
+	communityPool, err := querier.CommunityPool(sdktypes.WrapSDKContext(ctx), &distrotypes.QueryCommunityPoolRequest{})
 	if err != nil {
-		return sdktypes.Int{}, err
+		return math.Int{}, err
 	}
-	lunaCommunityPool := communityPool.Pool.AmountOf("uluna").TruncateInt()
+	communityPool_ := communityPool.Pool.AmountOf("uosmo").TruncateInt()
 
-	return lunaTotalSupply.Sub(lunaCommunityPool).Sub(totalVesting), nil
+	return totalSupply_.Sub(communityPool_).Sub(totalVesting), nil
 }
 
-func runAccountExportWorker(app *terra.TerraApp) {
+func runAccountExportWorker(app *app.OsmosisApp) {
 	app.Logger().Info("[export] exporting accounts")
 	height := app.LastBlockHeight()
 	ctx := app.NewContext(true, tmproto.Header{Height: height})
@@ -75,35 +85,36 @@ func runAccountExportWorker(app *terra.TerraApp) {
 	var accounts []string
 	count := 0
 	app.AccountKeeper.IterateAccounts(ctx, func(account authtypes.AccountI) (stop bool) {
-		balance := app.BankKeeper.GetBalance(ctx, account.GetAddress(), "uluna").Amount
-		delegationRewards, err := app.DistrKeeper.DelegationTotalRewards(sdktypes.WrapSDKContext(ctx), &types.QueryDelegationTotalRewardsRequest{
+		balance := app.BankKeeper.GetBalance(ctx, account.GetAddress(), "uosmo").Amount
+		querier := distrokeeper.NewQuerier(*app.DistrKeeper)
+		delegationRewards, err := querier.DelegationTotalRewards(sdktypes.WrapSDKContext(ctx), &types.QueryDelegationTotalRewardsRequest{
 			DelegatorAddress: account.GetAddress().String(),
 		})
 		if err != nil {
 			panic(err)
 		} else {
-			balance = balance.Add(delegationRewards.Total.AmountOf("uluna").TruncateInt())
+			balance = balance.Add(delegationRewards.Total.AmountOf("uosmo").TruncateInt())
 		}
 		switch account.(type) {
 		case *vestingtypes.PeriodicVestingAccount:
 			v := account.(*vestingtypes.PeriodicVestingAccount)
-			vesting := v.GetVestingCoins(time).AmountOf("uluna")
-			vested := balance.Add(v.DelegatedFree.AmountOf("uluna"))
+			vesting := v.GetVestingCoins(time).AmountOf("uosmo")
+			vested := balance.Add(v.DelegatedFree.AmountOf("uosmo"))
 			accounts = append(accounts, fmt.Sprintf("%s,%s,%s", v.Address, vested, vesting))
 		case *vestingtypes.ContinuousVestingAccount:
 			v := account.(*vestingtypes.ContinuousVestingAccount)
-			vesting := v.GetVestingCoins(time).AmountOf("uluna")
-			vested := balance.Add(v.DelegatedFree.AmountOf("uluna"))
+			vesting := v.GetVestingCoins(time).AmountOf("uosmo")
+			vested := balance.Add(v.DelegatedFree.AmountOf("uosmo"))
 			accounts = append(accounts, fmt.Sprintf("%s,%s,%s", v.Address, vested, vesting))
 		case *vestingtypes.DelayedVestingAccount:
 			v := account.(*vestingtypes.DelayedVestingAccount)
-			vesting := v.GetVestingCoins(time).AmountOf("uluna")
-			vested := balance.Add(v.DelegatedFree.AmountOf("uluna"))
+			vesting := v.GetVestingCoins(time).AmountOf("uosmo")
+			vested := balance.Add(v.DelegatedFree.AmountOf("uosmo"))
 			accounts = append(accounts, fmt.Sprintf("%s,%s,%s", v.Address, vested, vesting))
 		case *vestingtypes.PermanentLockedAccount:
 			v := account.(*vestingtypes.PermanentLockedAccount)
-			vesting := v.GetVestingCoins(time).AmountOf("uluna")
-			vested := balance.Add(v.DelegatedFree.AmountOf("uluna"))
+			vesting := v.GetVestingCoins(time).AmountOf("uosmo")
+			vested := balance.Add(v.DelegatedFree.AmountOf("uosmo"))
 			accounts = append(accounts, fmt.Sprintf("%s,%s,%s", v.Address, vested, vesting))
 		case *authtypes.BaseAccount:
 			delegations := app.StakingKeeper.GetAllDelegatorDelegations(ctx, account.GetAddress())

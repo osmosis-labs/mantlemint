@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	// terra "github.com/terra-money/core/v2/app"
+	"github.com/osmosis-labs/osmosis/v25/app"
 )
 
-func RegisterRESTRoutes(router *mux.Router, app *terra.TerraApp) {
+func RegisterRESTRoutes(router *mux.Router, app *app.OsmosisApp) {
 	router.Handle("/export/accounts", http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		err := ExportAllAccounts(app)
 		if err != nil {
