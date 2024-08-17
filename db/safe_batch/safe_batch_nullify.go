@@ -1,14 +1,14 @@
 package safe_batch
 
-import tmdb "github.com/tendermint/tm-db"
+import cbftdb "github.com/cometbft/cometbft-db"
 
-var _ tmdb.Batch = (*SafeBatchNullified)(nil)
+var _ cbftdb.Batch = (*SafeBatchNullified)(nil)
 
 type SafeBatchNullified struct {
-	batch tmdb.Batch
+	batch cbftdb.Batch
 }
 
-func NewSafeBatchNullify(batch tmdb.Batch) tmdb.Batch {
+func NewSafeBatchNullify(batch cbftdb.Batch) cbftdb.Batch {
 	return &SafeBatchNullified{
 		batch: batch,
 	}

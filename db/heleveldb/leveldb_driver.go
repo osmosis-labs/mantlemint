@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"math"
 
-	cometbft "github.com/cometbft/cometbft-db"
+	cbftdb "github.com/cometbft/cometbft-db"
 	"github.com/osmosis-labs/mantlemint/db/hld"
 	"github.com/osmosis-labs/mantlemint/lib"
 )
 
 type Driver struct {
-	session *cometbft.GoLevelDB
+	session *cbftdb.GoLevelDB
 	mode    int
 }
 
 func NewLevelDBDriver(config *DriverConfig) (*Driver, error) {
-	ldb, err := cometbft.NewGoLevelDB(config.Name, config.Dir)
+	ldb, err := cbftdb.NewGoLevelDB(config.Name, config.Dir)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func NewLevelDBDriver(config *DriverConfig) (*Driver, error) {
 	}, nil
 }
 
-func (d *Driver) newInnerIterator(requestHeight int64, pdb *cometbft.PrefixDB) (cometbft.Iterator, error) {
+func (d *Driver) newInnerIterator(requestHeight int64, pdb *cbftdb.PrefixDB) (cbftdb.Iterator, error) {
 	if d.mode == DriverModeKeySuffixAsc {
 		heightEnd := lib.UintToBigEndian(uint64(requestHeight + 1))
 		return pdb.ReverseIterator(nil, heightEnd)
@@ -48,7 +48,7 @@ func (d *Driver) Get(maxHeight int64, key []byte) ([]byte, error) {
 		return nil, fmt.Errorf("invalid height")
 	}
 
-	pdb := tmdb.NewPrefixDB(d.session, prefixDataWithHeightKey(key))
+	pdb := cbftdb.NewPrefixDB(d.session, prefixDataWithHeightKey(key))
 
 	iter, _ := d.newInnerIterator(requestHeight, pdb)
 	defer iter.Close()
@@ -82,7 +82,7 @@ func (d *Driver) Has(maxHeight int64, key []byte) (bool, error) {
 		return false, fmt.Errorf("invalid height")
 	}
 
-	pdb := cometbft.NewPrefixDB(d.session, prefixDataWithHeightKey(key))
+	pdb := cbftdb.NewPrefixDB(d.session, prefixDataWithHeightKey(key))
 
 	iter, _ := d.newInnerIterator(requestHeight, pdb)
 	defer iter.Close()
@@ -122,7 +122,7 @@ func (d *Driver) DeleteSync(atHeight int64, key []byte) error {
 
 func (d *Driver) Iterator(maxHeight int64, start, end []byte) (hld.HeightLimitEnabledIterator, error) {
 	if maxHeight == 0 {
-		pdb := cometbft.NewPrefixDB(d.session, cCurrentDataPrefix)
+		pdb := cbftdb.NewPrefixDB(d.session, cCurrentDataPrefix)
 		return pdb.Iterator(start, end)
 	}
 	return NewLevelDBIterator(d, maxHeight, start, end)
@@ -130,7 +130,7 @@ func (d *Driver) Iterator(maxHeight int64, start, end []byte) (hld.HeightLimitEn
 
 func (d *Driver) ReverseIterator(maxHeight int64, start, end []byte) (hld.HeightLimitEnabledIterator, error) {
 	if maxHeight == 0 {
-		pdb := cometbft.NewPrefixDB(d.session, cCurrentDataPrefix)
+		pdb := cbftdb.NewPrefixDB(d.session, cCurrentDataPrefix)
 		return pdb.ReverseIterator(start, end)
 	}
 	return NewLevelDBReverseIterator(d, maxHeight, start, end)

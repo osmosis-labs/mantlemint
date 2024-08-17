@@ -1,24 +1,24 @@
 package rollbackable
 
 import (
-// tmdb "github.com/tendermint/tm-db"
+	cbftdb "github.com/cometbft/cometbft-db"
 )
 
 type HasRollbackBatch interface {
-	RollbackBatch() tmdb.Batch
+	RollbackBatch() cbftdb.Batch
 }
 
-var _ tmdb.Batch = (*RollbackableBatch)(nil)
+var _ cbftdb.Batch = (*RollbackableBatch)(nil)
 
 type RollbackableBatch struct {
-	tmdb.Batch
+	cbftdb.Batch
 
-	db            tmdb.DB
-	RollbackBatch tmdb.Batch
+	db            cbftdb.DB
+	RollbackBatch cbftdb.Batch
 	RecordCount   int
 }
 
-func NewRollbackableBatch(db tmdb.DB) *RollbackableBatch {
+func NewRollbackableBatch(db cbftdb.DB) *RollbackableBatch {
 	return &RollbackableBatch{
 		db:            db,
 		Batch:         db.NewBatch(),
