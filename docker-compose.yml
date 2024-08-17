@@ -1,28 +1,28 @@
-version: '3.8'
+version: "3.8"
 
 x-mm-env: &mm-env
-  -  CHAIN_ID=localterra 
-  -  MANTLEMINT_HOME=/app 
-  -  INDEXER_DB=/data/indexer  
-  -  MANTLEMINT_DB=/data/mantlemint 
-  -  GENESIS_PATH=/app/config/genesis.json 
-  -  DISABLE_SYNC=false 
-  -  RUST_BACKTRACE=full 
-  -  ENABLE_EXPORT_MODULE=false 
-  -  RICHLIST_LENGTH=100
-  -  RICHLIST_THRESHOLD=1uluna 
-  -  ACCOUNT_ADDRESS_PREFIX=terra 
-  -  BOND_DENOM=uluna 
-  -  LCD_ENDPOINTS=http://terrad:1317 
-  -  RPC_ENDPOINTS=http://terrad:26657 
-  -  WS_ENDPOINTS=ws://terrad:26657/websocket 
+  - CHAIN_ID=localosmosis
+  - MANTLEMINT_HOME=/app
+  - INDEXER_DB=/data/indexer
+  - MANTLEMINT_DB=/data/mantlemint
+  - GENESIS_PATH=/app/config/genesis.json
+  - DISABLE_SYNC=false
+  - RUST_BACKTRACE=full
+  - ENABLE_EXPORT_MODULE=false
+  - RICHLIST_LENGTH=100
+  - RICHLIST_THRESHOLD=1uluna
+  - ACCOUNT_ADDRESS_PREFIX=osmo
+  - BOND_DENOM=uluna
+  - LCD_ENDPOINTS=http://osmosisd:1317
+  - RPC_ENDPOINTS=http://osmosisd:26657
+  - WS_ENDPOINTS=ws://osmosisd:26657/websocket
 
 services:
-  terrad:
-    image: ghcr.io/terra-money/localterra:${TERRA_VERSION:-latest}
-    hostname: terrad
+  osmosisd:
+    image: ghcr.io/osmosis-labs/localosmosis:${OSMOSIS_VERSION:-latest}
+    hostname: osmosisd
     volumes:
-      - terra:/app
+      - osmosis:/app
     networks:
       - default
     ports:
@@ -33,13 +33,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ghcr.io/terra-money/mantlemint:${TERRA_VERSION:-latest}
+    image: ghcr.io/osmosis-labs/mantlemint:${OSMOSIS_VERSION:-latest}
     hostname: mantlemint
     command: /usr/local/bin/mantlemint
     environment: *mm-env
     restart: unless-stopped
     volumes:
-      - terra:/app
+      - osmosis:/app
     networks:
       - default
     ports:
@@ -47,9 +47,7 @@ services:
       - 9090:9090
 
 volumes:
-  terra:
+  osmosis:
 
 networks:
   default:
-
-
