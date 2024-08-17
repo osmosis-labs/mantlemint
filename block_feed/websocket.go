@@ -2,8 +2,9 @@ package block_feed
 
 import (
 	"encoding/json"
-	// "github.com/gorilla/websocket"
 	"log"
+
+	"github.com/gorilla/websocket"
 )
 
 var _ BlockFeed = (*WSSubscription)(nil)

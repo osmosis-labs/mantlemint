@@ -2,7 +2,7 @@ package block_feed
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 )
@@ -35,7 +35,7 @@ func (rpc *RPCSubscription) SyncFromUntil(from int64, to int64, rpcIndex int) {
 			log.Fatalf("block request failed, %v", err)
 		}
 
-		resBytes, err := ioutil.ReadAll(res.Body)
+		resBytes, err := io.ReadAll(res.Body)
 		if err != nil {
 			log.Fatalf("block request failed, %v", err)
 		}

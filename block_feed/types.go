@@ -1,7 +1,7 @@
 package block_feed
 
 import (
-// tendermint "github.com/tendermint/tendermint/types"
+	cometbft "github.com/cometbft/cometbft/types"
 )
 
 // BlockFeed is a standard interface to provide subscription over blocks
@@ -16,6 +16,6 @@ type BlockFeed interface {
 }
 
 type BlockResult struct {
-	BlockID *tendermint.BlockID `json:"block_id"`
-	Block   *tendermint.Block   `json:"block"`
+	BlockID *cometbft.BlockID `json:"block_id"`
+	Block   *cometbft.Block   `json:"block"`
 }
