@@ -6,10 +6,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	tmdb "github.com/tendermint/tm-db"
-	"github.com/terra-money/mantlemint/db/safe_batch"
+	// "github.com/stretchr/testify/assert"
+	// tmjson "github.com/tendermint/tendermint/libs/json"
+	// tmdb "github.com/tendermint/tm-db"
+	// "github.com/terra-money/mantlemint/db/safe_batch"
 )
 
 func TestIndexBlock(t *testing.T) {

@@ -3,9 +3,9 @@ package heleveldb
 import (
 	"fmt"
 
-	tmdb "github.com/tendermint/tm-db"
-	"github.com/terra-money/mantlemint/db/hld"
-	"github.com/terra-money/mantlemint/db/rollbackable"
+	// tmdb "github.com/tendermint/tm-db"
+	// "github.com/terra-money/mantlemint/db/hld"
+	// "github.com/terra-money/mantlemint/db/rollbackable"
 )
 
 var _ hld.HeightLimitEnabledBatch = (*LevelBatch)(nil)

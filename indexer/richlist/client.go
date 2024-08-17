@@ -9,8 +9,8 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/gorilla/mux"
-	tmdb "github.com/tendermint/tm-db"
-	"github.com/terra-money/mantlemint/indexer"
+	// tmdb "github.com/tendermint/tm-db"
+	// "github.com/terra-money/mantlemint/indexer"
 )
 
 var (

@@ -2,7 +2,7 @@ package block_feed
 
 import (
 	"encoding/json"
-	"github.com/gorilla/websocket"
+	// "github.com/gorilla/websocket"
 	"log"
 )
 

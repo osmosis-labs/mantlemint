@@ -1,7 +1,7 @@
 package rollbackable
 
 import (
-	tmdb "github.com/tendermint/tm-db"
+// tmdb "github.com/tendermint/tm-db"
 )
 
 type HasRollbackBatch interface {

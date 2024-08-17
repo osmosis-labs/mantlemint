@@ -6,12 +6,11 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/crisis"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
-	terra "github.com/terra-money/core/v2/app"
+	// sdk "github.com/cosmos/cosmos-sdk/types"
+	// "github.com/cosmos/cosmos-sdk/x/crisis"
+	// "github.com/spf13/pflag"
+	// "github.com/spf13/viper"
+	// terra "github.com/terra-money/core/v2/app"
 )
 
 type Config struct {

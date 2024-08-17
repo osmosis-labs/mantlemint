@@ -2,9 +2,8 @@ package safe_batch
 
 import (
 	"fmt"
-
-	tmdb "github.com/tendermint/tm-db"
-	"github.com/terra-money/mantlemint/db/rollbackable"
+	// tmdb "github.com/tendermint/tm-db"
+	// "github.com/terra-money/mantlemint/db/rollbackable"
 )
 
 var _ tmdb.DB = (*SafeBatchDB)(nil)

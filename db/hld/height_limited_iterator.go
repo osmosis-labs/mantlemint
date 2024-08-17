@@ -1,6 +1,6 @@
 package hld
 
-import tmdb "github.com/tendermint/tm-db"
+// import tmdb "github.com/tendermint/tm-db"
 
 var _ tmdb.Iterator = (*HeightLimitedDBIterator)(nil)
 

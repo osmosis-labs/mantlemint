@@ -6,12 +6,12 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	tendermint "github.com/tendermint/tendermint/types"
-	tmdb "github.com/tendermint/tm-db"
-	"github.com/terra-money/mantlemint/db/safe_batch"
-	"github.com/terra-money/mantlemint/mantlemint"
+	// "github.com/stretchr/testify/assert"
+	// tmjson "github.com/tendermint/tendermint/libs/json"
+	// tendermint "github.com/tendermint/tendermint/types"
+	// tmdb "github.com/tendermint/tm-db"
+	// "github.com/terra-money/mantlemint/db/safe_batch"
+	// "github.com/terra-money/mantlemint/mantlemint"
 )
 
 func TestIndexTx(t *testing.T) {

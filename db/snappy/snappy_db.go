@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/golang/snappy"
 	"github.com/pkg/errors"
-	tmdb "github.com/tendermint/tm-db"
+	// tmdb "github.com/tendermint/tm-db"
 	"sync"
 )
 

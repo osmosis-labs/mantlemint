@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	terra "github.com/terra-money/core/v2/app"
+	// terra "github.com/terra-money/core/v2/app"
 )
 
 func RegisterRESTRoutes(router *mux.Router, app *terra.TerraApp) {

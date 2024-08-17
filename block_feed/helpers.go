@@ -1,8 +1,8 @@
 package block_feed
 
 import (
-	abci "github.com/tendermint/tendermint/abci/types"
-	tmjson "github.com/tendermint/tendermint/libs/json"
+	// abci "github.com/tendermint/tendermint/abci/types"
+	// tmjson "github.com/tendermint/tendermint/libs/json"
 )
 
 func extractBlockFromWSResponse(message []byte) (*BlockResult, error) {

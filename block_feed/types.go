@@ -1,7 +1,7 @@
 package block_feed
 
 import (
-	tendermint "github.com/tendermint/tendermint/types"
+// tendermint "github.com/tendermint/tendermint/types"
 )
 
 // BlockFeed is a standard interface to provide subscription over blocks

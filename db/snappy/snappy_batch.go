@@ -2,7 +2,7 @@ package snappy
 
 import (
 	"github.com/golang/snappy"
-	tmdb "github.com/tendermint/tm-db"
+	// tmdb "github.com/tendermint/tm-db"
 )
 
 var _ tmdb.Batch = (*SnappyBatch)(nil)

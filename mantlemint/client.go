@@ -1,10 +1,10 @@
 package mantlemint
 
 import (
-	abcicli "github.com/tendermint/tendermint/abci/client"
-	"github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/service"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
+	// abcicli "github.com/tendermint/tendermint/abci/client"
+	// "github.com/tendermint/tendermint/abci/types"
+	// "github.com/tendermint/tendermint/libs/service"
+	// tmsync "github.com/tendermint/tendermint/libs/sync"
 )
 
 // NewConcurrentQueryClient creates a local client, which will be directly calling the

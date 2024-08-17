@@ -1,9 +1,9 @@
 package snappy
 
 import (
-	"github.com/stretchr/testify/assert"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	tendermint "github.com/tendermint/tendermint/types"
+	// "github.com/stretchr/testify/assert"
+	// tmjson "github.com/tendermint/tendermint/libs/json"
+	// tendermint "github.com/tendermint/tendermint/types"
 	db "github.com/tendermint/tm-db"
 	"io/ioutil"
 	"os"

@@ -1,8 +1,8 @@
 package mantlemint
 
 import (
-	abci "github.com/tendermint/tendermint/abci/types"
-	tm "github.com/tendermint/tendermint/types"
+	// abci "github.com/tendermint/tendermint/abci/types"
+	// tm "github.com/tendermint/tendermint/types"
 )
 
 type EventCollector struct {
