@@ -22,8 +22,6 @@ import (
 	"os"
 	"runtime/debug"
 
-	"github.com/spf13/viper"
-
 	// wasmconfig "github.com/osmosis-labs/core/v2/app/wasmconfig"
 
 	dbm "github.com/cometbft/cometbft-db"
@@ -90,7 +88,7 @@ func main() {
 
 	// customize CMS to limit kv store's read height on query
 	cms := rootmulti.NewStore(batched, hldb, logger)
-	vpr := viper.GetViper()
+	// vpr := viper.GetViper()
 
 	var app = osmosis.NewOsmosisApp(
 		logger,
@@ -100,9 +98,8 @@ func main() {
 		make(map[int64]bool),
 		mantlemintConfig.Home,
 		0,
-		codec,
-		vpr,
-		appkeepers.GetConfig(vpr),
+		nil,
+		nil,
 		fauxMerkleModeOpt,
 		func(ba *baseapp.BaseApp) {
 			ba.SetCMS(cms)
