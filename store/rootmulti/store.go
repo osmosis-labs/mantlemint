@@ -2,13 +2,12 @@ package rootmulti
 
 import (
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/pruning"
+	// "github.com/cosmos/cosmos-sdk/pruning"
 	"io"
 	"math"
 	"sort"
 	"strings"
 	"sync"
-
 	// iavltree "github.com/cosmos/iavl"
 	// protoio "github.com/gogo/protobuf/io"
 	// gogotypes "github.com/gogo/protobuf/types"
@@ -17,9 +16,7 @@ import (
 	// "github.com/tendermint/tendermint/libs/log"
 	// dbm "github.com/tendermint/tm-db"
 	// "github.com/terra-money/mantlemint/db/hld"
-
 	// snapshottypes "github.com/cosmos/cosmos-sdk/snapshots/types"
-
 	// pruningtypes "github.com/cosmos/cosmos-sdk/pruning/types"
 	// "github.com/cosmos/cosmos-sdk/store/cachemulti"
 	// "github.com/cosmos/cosmos-sdk/store/dbadapter"
