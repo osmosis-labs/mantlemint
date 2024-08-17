@@ -1,4 +1,6 @@
-# terra-money/mantlemint
+# osmosis-labs/mantlemint
+
+A fork of terra-money/mantlemint
 
 ## What is Mantlemint?
 
@@ -8,21 +10,15 @@ Native query performance on RPC is slow and is not suitable for massive query ha
 
 If you are looking to serve any kind of public node accepting varying degrees of end-user queries, it is recommended that you run a mantlemint instance alongside of your RPC. While mantlemint is indeed faster at resolving queries, due to the absence of IAVL tree and native tendermint, it cannot join p2p network by itself. Rather, you would have to relay finalized blocks to mantlemint, using RPC's websocket.
 
-## Currently supported terra-money/core versions
-
-- columbus-5 | terra-money/core@0.5.x | tendermint v0.34.x
-
 ## Features
 
 - Superior LCD performance
-  - With the exception of Tendermint RPC/Transactions.
+  - With the exception of Comerbft RPC/Transactions.
 - Super reliable and effective LCD response cache to prevent unnecessary computation for query resolving
 - Fully archival; historical states are available with `?height` query parameter.
 - [Useful default indexes](#default-indexes)
 
 ## Installation
-
-This specific directory contains mantlemint implementation for [@terra-money/core@0.5.x](https://github.com/terra-money/core) (compatible with [tendermint@0.34.x](https://github.com/tendermint/tendermint)).
 
 Go v1.17+ is recommended for this project ([install instructions](https://go.dev/doc/install)).
 
@@ -138,13 +134,12 @@ Please note that mantlemint is still able to serve queries while `/health` retur
 - `/index/tx/by_hash/{txHash}`: Get transaction and its response by hash. Equivalent to `lcd/txs/{hash}`, but without hitting RPC.
 - `/index/richlist/{height}`: Get a richlist at the given height. Height supports `latest`.
 
-## Notable Differences from [core](https://github.com/terra-money/core)
+## Notable Differences from [osmosis](https://github.com/osmosis-labs/osmosis)
 
-- Uses a forked [tendermint/tm-db](https://github.com/terra-money/tm-db/commit/c71e8b6e9f20d7f5be32527db4a92ae19ac0d2b2): Disables unncessary mutexes in `prefixdb` methods
-- Replaces ABCIClient with [NewConcurrentQueryClient](https://github.com/terra-money/mantlemint/blob/main/mantlemint/client.go#L110): Removal of mutexes allow better concurrency, even during block injection
+- Replaces ABCIClient with [NewConcurrentQueryClient](https://github.com/osmosis-labs/mantlemint/blob/main/mantlemint/client.go#L110): Removal of mutexes allow better concurrency, even during block injection
 - Uses single batch-protected db: All state changes are flushed at once, making it safe to read from db during block injection
 - Automatic failover: In case of block injection failure, mantlemint reverts back to the previous known state and retry
-- Strictly no `tendermint`; some parameters in app.toml would not affect `mantlemint`
+- Strictly no `cometbft`; some parameters in app.toml would not affect `mantlemint`
 - Following endpoints are not implemented
   - `GET /blocks/`
   - `GET /blocks/latest`
@@ -155,7 +150,7 @@ Please note that mantlemint is still able to serve queries while `/health` retur
 
 ## FAQ
 
-### Q1. Can I use public RPC (http://public-node.terra.dev:26657) as RPC and WS endpoints?
+### Q1. Can I use public RPC as RPC and WS endpoints?
 
 While you can, we do NOT recommend doing so. We only expose public node as a seed node for p2p, and its http/ws connection may not be stable. It is safer to have your own RPC
 
@@ -163,7 +158,7 @@ While you can, we do NOT recommend doing so. We only expose public node as a see
 
 No. Mantlemint's db structure is NOT compatible with core's.
 
-### Q3. Mantlemint doesn't support tendermint queries like /blocks, /txs, but I still need them. What should I do?
+### Q3. Mantlemint doesn't support cometbft queries like /blocks, /txs, but I still need them. What should I do?
 
 You can route those traffic to an existing RPC that you use for `RPC_ENDPOINTS` and `WS_ENDPOINTS` with a load balancer.
 
@@ -198,14 +193,10 @@ ${MANTLEMINT_HOME}/mantlemint.db
 
 ## Community
 
-- [Offical Website](https://terra.money)
-- [Discord](https://discord.gg/e29HWwC2Mz)
-- [Telegram](https://t.me/terra_announcements)
-- [Twitter](https://twitter.com/terra_money)
-- [YouTube](https://goo.gl/3G4T1z)
+- [X](https://x.com/osmosiszone)
 
 # License
 
 This software is licensed under the Apache 2.0 license. Read more about it here.
 
-© 2022 Terraform Labs, PTE LTD
+© 2024 Osmosis Labs, PTE LTD

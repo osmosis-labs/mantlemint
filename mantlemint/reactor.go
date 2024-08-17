@@ -1,20 +1,17 @@
 package mantlemint
 
 import (
-	// "fmt"
-	// abcicli "github.com/tendermint/tendermint/abci/client"
-	// abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/consensus"
-	"github.com/tendermint/tendermint/crypto/merkle"
-	"github.com/tendermint/tendermint/proxy"
-	"github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/store"
+	"github.com/cometbft/cometbft/consensus"
+	"github.com/cometbft/cometbft/crypto/merkle"
+	"github.com/cometbft/cometbft/proxy"
+	"github.com/cometbft/cometbft/state"
+	"github.com/cometbft/cometbft/store"
 
 	"log"
 	"sync"
 
-	tendermint "github.com/tendermint/tendermint/types"
-	tmdb "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
+	tendermint "github.com/cometbft/cometbft/types"
 )
 
 var _ Mantlemint = (*Instance)(nil)
@@ -26,7 +23,7 @@ var (
 type Instance struct {
 	executor   Executor
 	conn       proxy.AppConns
-	db         tmdb.DB
+	db         dbm.DB
 	stateStore state.Store
 	blockStore state.BlockStore
 	mtx        *sync.Mutex
@@ -44,7 +41,7 @@ type Instance struct {
 }
 
 func NewMantlemint(
-	db tmdb.DB,
+	db dbm.DB,
 	conn proxy.AppConns,
 	executor Executor,
 	runBefore MantlemintCallbackBefore,
@@ -124,9 +121,14 @@ func (mm *Instance) LoadInitialState() error {
 
 func (mm *Instance) Inject(block *tendermint.Block) error {
 	var currentState = mm.lastState
+	partSet, err2 := block.MakePartSet(tendermint.BlockPartSizeBytes)
+	if err2 != nil {
+		return err2
+	}
+
 	var blockID = tendermint.BlockID{
 		Hash:          block.Hash(),
-		PartSetHeader: block.MakePartSet(tendermint.BlockPartSizeBytes).Header(),
+		PartSetHeader: partSet.Header(),
 	}
 
 	// apply this block

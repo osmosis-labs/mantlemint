@@ -3,15 +3,15 @@ package heleveldb
 import (
 	"bytes"
 
-	tmdb "github.com/tendermint/tm-db"
-	"github.com/terra-money/mantlemint/db/hld"
+	cometbft "github.com/cometbft/cometbft-db"
+	"github.com/osmosis-labs/mantlemint/db/hld"
 )
 
 var _ hld.HeightLimitEnabledIterator = (*Iterator)(nil)
 
 type Iterator struct {
 	driver *Driver
-	tmdb.Iterator
+	cometbft.Iterator
 
 	maxHeight int64
 	start     []byte
@@ -24,7 +24,7 @@ type Iterator struct {
 }
 
 func NewLevelDBIterator(d *Driver, maxHeight int64, start, end []byte) (*Iterator, error) {
-	pdb := tmdb.NewPrefixDB(d.session, cKeysForIteratorPrefix)
+	pdb := cometbft.NewPrefixDB(d.session, cKeysForIteratorPrefix)
 	iter, err := pdb.Iterator(start, end)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func NewLevelDBIterator(d *Driver, maxHeight int64, start, end []byte) (*Iterato
 	}, nil
 }
 func NewLevelDBReverseIterator(d *Driver, maxHeight int64, start, end []byte) (*Iterator, error) {
-	pdb := tmdb.NewPrefixDB(d.session, cKeysForIteratorPrefix)
+	pdb := cometbft.NewPrefixDB(d.session, cKeysForIteratorPrefix)
 	iter, err := pdb.ReverseIterator(start, end)
 	if err != nil {
 		return nil, err

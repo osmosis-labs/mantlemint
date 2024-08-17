@@ -2,16 +2,15 @@ package rpc
 
 import (
 	"context"
-	"fmt"
 
-	abcicli "github.com/tendermint/tendermint/abci/client"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/bytes"
-	tmlog "github.com/tendermint/tendermint/libs/log"
-	rpcclient "github.com/tendermint/tendermint/rpc/client"
-	"github.com/tendermint/tendermint/rpc/core"
-	coretypes "github.com/tendermint/tendermint/rpc/core/types"
-	tendermint "github.com/tendermint/tendermint/types"
+	abcicli "github.com/cometbft/cometbft/abci/client"
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/libs/bytes"
+	cbftlog "github.com/cometbft/cometbft/libs/log"
+	rpcclient "github.com/cometbft/cometbft/rpc/client"
+	"github.com/cometbft/cometbft/rpc/core"
+	coretypes "github.com/cometbft/cometbft/rpc/core/types"
+	cometbft "github.com/cometbft/cometbft/types"
 )
 
 var _ rpcclient.Client = (*MantlemintRPCClient)(nil)
@@ -23,6 +22,16 @@ type MantlemintRPCClient struct {
 func NewRpcClient(client abcicli.Client) rpcclient.Client {
 	return &MantlemintRPCClient{client: client}
 }
+
+func (m *MantlemintRPCClient) Header(ctx context.Context, height *int64) (*coretypes.ResultHeader, error) {
+    panic("implement me")
+}
+
+
+func (m *MantlemintRPCClient) HeaderByHash(ctx context.Context, hash bytes.HexBytes) (*coretypes.ResultHeader, error) {
+	panic("implement me")
+}
+
 
 func (m *MantlemintRPCClient) ABCIInfo(ctx context.Context) (*coretypes.ResultABCIInfo, error) {
 	panic("implement me")
@@ -94,19 +103,19 @@ func (m *MantlemintRPCClient) String() string {
 	return m.client.String()
 }
 
-func (m *MantlemintRPCClient) SetLogger(logger tmlog.Logger) {
+func (m *MantlemintRPCClient) SetLogger(logger cbftlog.Logger) {
 	panic("implement me")
 }
 
-func (m *MantlemintRPCClient) BroadcastTxCommit(ctx context.Context, tx tendermint.Tx) (*coretypes.ResultBroadcastTxCommit, error) {
+func (m *MantlemintRPCClient) BroadcastTxCommit(ctx context.Context, tx cometbft.Tx) (*coretypes.ResultBroadcastTxCommit, error) {
 	panic("implement me")
 }
 
-func (m *MantlemintRPCClient) BroadcastTxAsync(ctx context.Context, tx tendermint.Tx) (*coretypes.ResultBroadcastTx, error) {
+func (m *MantlemintRPCClient) BroadcastTxAsync(ctx context.Context, tx cometbft.Tx) (*coretypes.ResultBroadcastTx, error) {
 	panic("implement me")
 }
 
-func (m *MantlemintRPCClient) BroadcastTxSync(ctx context.Context, tx tendermint.Tx) (*coretypes.ResultBroadcastTx, error) {
+func (m *MantlemintRPCClient) BroadcastTxSync(ctx context.Context, tx cometbft.Tx) (*coretypes.ResultBroadcastTx, error) {
 	panic("implement me")
 }
 
@@ -156,9 +165,6 @@ func (m *MantlemintRPCClient) Health(ctx context.Context) (*coretypes.ResultHeal
 
 func (m *MantlemintRPCClient) Block(ctx context.Context, height *int64) (*coretypes.ResultBlock, error) {
 	return core.Block(nil, height)
-	fmt.Println("is it you")
-
-	panic("implement me")
 }
 
 func (m *MantlemintRPCClient) BlockByHash(ctx context.Context, hash []byte) (*coretypes.ResultBlock, error) {
@@ -193,7 +199,7 @@ func (m *MantlemintRPCClient) Status(ctx context.Context) (*coretypes.ResultStat
 	panic("implement me")
 }
 
-func (m *MantlemintRPCClient) BroadcastEvidence(ctx context.Context, evidence tendermint.Evidence) (*coretypes.ResultBroadcastEvidence, error) {
+func (m *MantlemintRPCClient) BroadcastEvidence(ctx context.Context, evidence cometbft.Evidence) (*coretypes.ResultBroadcastEvidence, error) {
 	panic("implement me")
 }
 
@@ -205,6 +211,6 @@ func (m *MantlemintRPCClient) NumUnconfirmedTxs(ctx context.Context) (*coretypes
 	panic("implement me")
 }
 
-func (m *MantlemintRPCClient) CheckTx(ctx context.Context, tx tendermint.Tx) (*coretypes.ResultCheckTx, error) {
+func (m *MantlemintRPCClient) CheckTx(ctx context.Context, tx cometbft.Tx) (*coretypes.ResultCheckTx, error) {
 	panic("implement me")
 }

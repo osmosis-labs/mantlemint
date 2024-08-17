@@ -1,10 +1,11 @@
 package mantlemint
 
 import (
-	abcicli "github.com/tendermint/tendermint/abci/client"
-	"github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/service"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
+	abcicli "github.com/cometbft/cometbft/abci/client"
+	"github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/libs/log"
+	"github.com/cometbft/cometbft/libs/service"
+	tmsync "github.com/cometbft/cometbft/libs/sync"
 )
 
 // NewConcurrentQueryClient creates a local client, which will be directly calling the
@@ -35,6 +36,97 @@ type localClient struct {
 	mtx *tmsync.RWMutex
 	types.Application
 	abcicli.Callback
+}
+
+// IsRunning implements abcicli.Client.
+// Subtle: this method shadows the method (BaseService).IsRunning of localClient.BaseService.
+func (app *localClient) IsRunning() bool {
+	return app.BaseService.IsRunning()
+}
+
+// OnReset implements abcicli.Client.
+// Subtle: this method shadows the method (BaseService).OnReset of localClient.BaseService.
+func (app *localClient) OnReset() error {
+	return app.BaseService.OnReset()
+}
+
+// OnStart implements abcicli.Client.
+// Subtle: this method shadows the method (BaseService).OnStart of localClient.BaseService.
+func (app *localClient) OnStart() error {
+	return app.BaseService.OnStart()
+}
+
+// OnStop implements abcicli.Client.
+// Subtle: this method shadows the method (BaseService).OnStop of localClient.BaseService.
+func (app *localClient) OnStop() {
+	app.BaseService.OnStop()
+}
+
+// PrepareProposalAsync implements abcicli.Client.
+func (app *localClient) PrepareProposalAsync(req types.RequestPrepareProposal) *abcicli.ReqRes {
+	res := app.Application.PrepareProposal(req)
+	return newLocalReqRes(
+		types.ToRequestPrepareProposal(req),
+		types.ToResponsePrepareProposal(res),
+	)
+}
+
+// PrepareProposalSync implements abcicli.Client.
+func (app *localClient) PrepareProposalSync(req types.RequestPrepareProposal) (*types.ResponsePrepareProposal, error) {
+	res := app.Application.PrepareProposal(req)
+	return &res, nil
+}
+
+// ProcessProposalAsync implements abcicli.Client.
+func (app *localClient) ProcessProposalAsync(req types.RequestProcessProposal) *abcicli.ReqRes {
+	res := app.Application.ProcessProposal(req)
+	return newLocalReqRes(
+		types.ToRequestProcessProposal(req),
+		types.ToResponseProcessProposal(res),
+	)
+}
+
+// ProcessProposalSync implements abcicli.Client.
+func (app *localClient) ProcessProposalSync(req types.RequestProcessProposal) (*types.ResponseProcessProposal, error) {
+	res := app.Application.ProcessProposal(req)
+	return &res, nil
+}
+
+// Quit implements abcicli.Client.
+// Subtle: this method shadows the method (BaseService).Quit of localClient.BaseService.
+func (app *localClient) Quit() <-chan struct{} {
+	res := app.BaseService.Quit()
+	return res
+}
+
+// Reset implements abcicli.Client.
+// Subtle: this method shadows the method (BaseService).Reset of localClient.BaseService.
+func (app *localClient) Reset() error {
+	return app.BaseService.Reset()
+}
+
+// SetLogger implements abcicli.Client.
+// Subtle: this method shadows the method (BaseService).SetLogger of localClient.BaseService.
+func (app *localClient) SetLogger(logger log.Logger) {
+	app.BaseService.SetLogger(logger)
+}
+
+// Start implements abcicli.Client.
+// Subtle: this method shadows the method (BaseService).Start of localClient.BaseService.
+func (app *localClient) Start() error {
+	return app.BaseService.Start()
+}
+
+// Stop implements abcicli.Client.
+// Subtle: this method shadows the method (BaseService).Stop of localClient.BaseService.
+func (app *localClient) Stop() error {
+	return app.BaseService.Stop()
+}
+
+// String implements abcicli.Client.
+// Subtle: this method shadows the method (BaseService).String of localClient.BaseService.
+func (app *localClient) String() string {
+	return app.BaseService.String()
 }
 
 func (app *localClient) SetResponseCallback(cb abcicli.Callback) {
@@ -74,16 +166,16 @@ func (app *localClient) InfoAsync(req types.RequestInfo) *abcicli.ReqRes {
 	)
 }
 
-func (app *localClient) SetOptionAsync(req types.RequestSetOption) *abcicli.ReqRes {
-	app.mtx.Lock()
-	defer app.mtx.Unlock()
+// func (app *localClient) SetOptionAsync(req types.RequestSetOption) *abcicli.ReqRes {
+// 	app.mtx.Lock()
+// 	defer app.mtx.Unlock()
 
-	res := app.Application.SetOption(req)
-	return app.callback(
-		types.ToRequestSetOption(req),
-		types.ToResponseSetOption(res),
-	)
-}
+// 	res := app.Application.SetOption(req)
+// 	return app.callback(
+// 		types.ToRequestSetOption(req),
+// 		types.ToResponseSetOption(res),
+// 	)
+// }
 
 func (app *localClient) DeliverTxAsync(params types.RequestDeliverTx) *abcicli.ReqRes {
 	app.mtx.Lock()
@@ -221,13 +313,13 @@ func (app *localClient) InfoSync(req types.RequestInfo) (*types.ResponseInfo, er
 	return &res, nil
 }
 
-func (app *localClient) SetOptionSync(req types.RequestSetOption) (*types.ResponseSetOption, error) {
-	app.mtx.Lock()
-	defer app.mtx.Unlock()
+// func (app *localClient) SetOptionSync(req types.RequestSetOption) (*types.ResponseSetOption, error) {
+// 	app.mtx.Lock()
+// 	defer app.mtx.Unlock()
 
-	res := app.Application.SetOption(req)
-	return &res, nil
-}
+// 	res := app.Application.SetOption(req)
+// 	return &res, nil
+// }
 
 func (app *localClient) DeliverTxSync(req types.RequestDeliverTx) (*types.ResponseDeliverTx, error) {
 	app.mtx.Lock()

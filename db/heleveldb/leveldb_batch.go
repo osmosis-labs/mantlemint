@@ -3,9 +3,9 @@ package heleveldb
 import (
 	"fmt"
 
-	tmdb "github.com/tendermint/tm-db"
-	"github.com/terra-money/mantlemint/db/hld"
-	"github.com/terra-money/mantlemint/db/rollbackable"
+	cometbft "github.com/cometbft/cometbft-db"
+	"github.com/osmosis-labs/mantlemint/db/hld"
+	"github.com/osmosis-labs/mantlemint/db/rollbackable"
 )
 
 var _ hld.HeightLimitEnabledBatch = (*LevelBatch)(nil)
@@ -61,18 +61,18 @@ func (b *LevelBatch) Delete(key []byte) error {
 }
 
 func (b *LevelBatch) Write() error {
-	return b.batch.Write()
+	return b.Write()
 }
 
 func (b *LevelBatch) WriteSync() error {
-	return b.batch.WriteSync()
+	return b.WriteSync()
 }
 
 func (b *LevelBatch) Close() error {
-	return b.batch.Close()
+	return b.Close()
 }
 
-func (b *LevelBatch) RollbackBatch() tmdb.Batch {
+func (b *LevelBatch) RollbackBatch() cometbft.Batch {
 	b.Metric()
 	return b.batch.RollbackBatch
 }

@@ -2,23 +2,24 @@ package block
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
 
+	"github.com/osmosis-labs/mantlemint/db/safe_batch"
 	"github.com/stretchr/testify/assert"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	tmdb "github.com/tendermint/tm-db"
-	"github.com/terra-money/mantlemint/db/safe_batch"
+
+	cbftdb "github.com/cometbft/cometbft-db"
+	cbftjson "github.com/cometbft/cometbft/libs/json"
 )
 
 func TestIndexBlock(t *testing.T) {
-	db := tmdb.NewMemDB()
+	db := cbftdb.NewMemDB()
 	blockFile, _ := os.Open("../fixtures/block_4724005_raw.json")
-	blockJSON, _ := ioutil.ReadAll(blockFile)
+	blockJSON, _ := io.ReadAll(blockFile)
 
 	record := BlockRecord{}
-	_ = tmjson.Unmarshal(blockJSON, &record)
+	_ = cbftjson.Unmarshal(blockJSON, &record)
 
 	batch := safe_batch.NewSafeBatchDB(db)
 	batch.(safe_batch.SafeBatchDBCloser).Open()

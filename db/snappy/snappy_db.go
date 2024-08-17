@@ -2,10 +2,11 @@ package snappy
 
 import (
 	"encoding/json"
+	"sync"
+
+	cbftdb "github.com/cometbft/cometbft-db"
 	"github.com/golang/snappy"
 	"github.com/pkg/errors"
-	tmdb "github.com/tendermint/tm-db"
-	"sync"
 )
 
 const (
@@ -18,20 +19,20 @@ var (
 	errUnknownData          = errors.New("unknown format")
 )
 
-var _ tmdb.DB = (*SnappyDB)(nil)
+var _ cbftdb.DB = (*SnappyDB)(nil)
 
-// SnappyDB implements a tmdb.DB overlay with snappy compression/decompression
+// SnappyDB implements a cbftdb.DB overlay with snappy compression/decompression
 // Iterator is NOT supported -- main purpose of this library is to support indexer.db,
 // which never makes use of iterators anyway
 // NOTE: implement when needed
 // NOTE2: monitor mem pressure, optimize by pre-allocating dst buf when there is bottleneck
 type SnappyDB struct {
-	db         tmdb.DB
+	db         cbftdb.DB
 	mtx        *sync.Mutex
 	compatMode int
 }
 
-func NewSnappyDB(db tmdb.DB, compatMode int) *SnappyDB {
+func NewSnappyDB(db cbftdb.DB, compatMode int) *SnappyDB {
 	return &SnappyDB{
 		mtx:        new(sync.Mutex),
 		db:         db,
@@ -42,7 +43,7 @@ func NewSnappyDB(db tmdb.DB, compatMode int) *SnappyDB {
 func (s *SnappyDB) Get(key []byte) ([]byte, error) {
 	if item, err := s.db.Get(key); err != nil {
 		return nil, err
-	} else if item == nil && err == nil {
+	} else if item == nil {
 		return nil, nil
 	} else {
 		decoded, decodeErr := snappy.Decode(nil, item)
@@ -90,11 +91,11 @@ func (s *SnappyDB) DeleteSync(key []byte) error {
 	return s.Delete(key)
 }
 
-func (s *SnappyDB) Iterator(start, end []byte) (tmdb.Iterator, error) {
+func (s *SnappyDB) Iterator(start, end []byte) (cbftdb.Iterator, error) {
 	return nil, errIteratorNotSupported
 }
 
-func (s *SnappyDB) ReverseIterator(start, end []byte) (tmdb.Iterator, error) {
+func (s *SnappyDB) ReverseIterator(start, end []byte) (cbftdb.Iterator, error) {
 	return nil, errIteratorNotSupported
 }
 
@@ -102,7 +103,7 @@ func (s *SnappyDB) Close() error {
 	return s.db.Close()
 }
 
-func (s *SnappyDB) NewBatch() tmdb.Batch {
+func (s *SnappyDB) NewBatch() cbftdb.Batch {
 	return NewSnappyBatch(s.db.NewBatch())
 }
 
@@ -112,4 +113,9 @@ func (s *SnappyDB) Print() error {
 
 func (s *SnappyDB) Stats() map[string]string {
 	return s.db.Stats()
+}
+
+// Add this method to the SafeBatchDB struct
+func (s *SnappyDB) Compact(start []byte, end []byte) error {
+	return s.db.Compact(start, end)
 }

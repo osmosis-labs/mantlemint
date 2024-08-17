@@ -1,4 +1,4 @@
 #!/bin/sh
 
 docker-compose rm -f -s -v
-docker volume rm localterra_terra localterra_fcd_data 
+docker volume rm localosmosis_osmosis localosmosis_fcd_data

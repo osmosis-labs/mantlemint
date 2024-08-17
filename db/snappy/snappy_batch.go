@@ -1,17 +1,17 @@
 package snappy
 
 import (
+	cometbft "github.com/cometbft/cometbft-db"
 	"github.com/golang/snappy"
-	tmdb "github.com/tendermint/tm-db"
 )
 
-var _ tmdb.Batch = (*SnappyBatch)(nil)
+var _ cometbft.Batch = (*SnappyBatch)(nil)
 
 type SnappyBatch struct {
-	batch tmdb.Batch
+	batch cometbft.Batch
 }
 
-func NewSnappyBatch(batch tmdb.Batch) *SnappyBatch {
+func NewSnappyBatch(batch cometbft.Batch) *SnappyBatch {
 	return &SnappyBatch{
 		batch: batch,
 	}

@@ -5,23 +5,24 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	tm "github.com/tendermint/tendermint/types"
-	tmdb "github.com/tendermint/tm-db"
-	terra "github.com/terra-money/core/v2/app"
-	"github.com/terra-money/mantlemint/db/safe_batch"
-	"github.com/terra-money/mantlemint/db/snappy"
-	"github.com/terra-money/mantlemint/mantlemint"
+
+	cbftdb "github.com/cometbft/cometbft-db"
+	cbfttypes "github.com/cometbft/cometbft/types"
+	"github.com/osmosis-labs/mantlemint/db/safe_batch"
+	"github.com/osmosis-labs/mantlemint/db/snappy"
+	"github.com/osmosis-labs/mantlemint/mantlemint"
+	"github.com/osmosis-labs/osmosis/v25/app"
 )
 
 type Indexer struct {
-	db          tmdb.DB
+	db          cbftdb.DB
 	indexerTags []string
 	indexers    []IndexFunc
-	app         *terra.TerraApp
+	app         *app.OsmosisApp
 }
 
-func NewIndexer(dbName, path string, app *terra.TerraApp) (*Indexer, error) {
-	indexerDB, indexerDBError := tmdb.NewGoLevelDB(dbName, path)
+func NewIndexer(dbName, path string, app *app.OsmosisApp) (*Indexer, error) {
+	indexerDB, indexerDBError := cbftdb.NewGoLevelDB(dbName, path)
 	if indexerDBError != nil {
 		return nil, indexerDBError
 	}
@@ -41,7 +42,7 @@ func (idx *Indexer) RegisterIndexerService(tag string, indexerFunc IndexFunc) {
 	idx.indexers = append(idx.indexers, indexerFunc)
 }
 
-func (idx *Indexer) Run(block *tm.Block, blockId *tm.BlockID, evc *mantlemint.EventCollector) error {
+func (idx *Indexer) Run(block *cbfttypes.Block, blockId *cbfttypes.BlockID, evc *mantlemint.EventCollector) error {
 	//batch := idx.db.NewBatch()
 	batch := safe_batch.NewSafeBatchDB(idx.db)
 	batchedOrigin := batch.(safe_batch.SafeBatchDBCloser)

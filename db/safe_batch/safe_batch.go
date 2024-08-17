@@ -3,22 +3,22 @@ package safe_batch
 import (
 	"fmt"
 
-	tmdb "github.com/tendermint/tm-db"
-	"github.com/terra-money/mantlemint/db/rollbackable"
+	cometbft "github.com/cometbft/cometbft-db"
+	"github.com/osmosis-labs/mantlemint/db/rollbackable"
 )
 
-var _ tmdb.DB = (*SafeBatchDB)(nil)
+var _ cometbft.DB = (*SafeBatchDB)(nil)
 var _ SafeBatchDBCloser = (*SafeBatchDB)(nil)
 
 type SafeBatchDBCloser interface {
-	tmdb.DB
+	cometbft.DB
 	Open()
-	Flush() (tmdb.Batch, error)
+	Flush() (cometbft.Batch, error)
 }
 
 type SafeBatchDB struct {
-	db    tmdb.DB
-	batch tmdb.Batch
+	db    cometbft.DB
+	batch cometbft.Batch
 }
 
 // open batch
@@ -27,7 +27,7 @@ func (s *SafeBatchDB) Open() {
 }
 
 // flush batch and return rollback batch if rollbackable
-func (s *SafeBatchDB) Flush() (tmdb.Batch, error) {
+func (s *SafeBatchDB) Flush() (cometbft.Batch, error) {
 	defer func() {
 		if s.batch != nil {
 			s.batch.Close()
@@ -42,7 +42,12 @@ func (s *SafeBatchDB) Flush() (tmdb.Batch, error) {
 	}
 }
 
-func NewSafeBatchDB(db tmdb.DB) tmdb.DB {
+// Add this method to the SafeBatchDB struct
+func (s *SafeBatchDB) Compact(start []byte, end []byte) error {
+    return s.db.Compact(start, end)
+}
+
+func NewSafeBatchDB(db cometbft.DB) cometbft.DB {
 	return &SafeBatchDB{
 		db:    db,
 		batch: nil,
@@ -81,11 +86,11 @@ func (s *SafeBatchDB) DeleteSync(key []byte) error {
 	return s.Delete(key)
 }
 
-func (s *SafeBatchDB) Iterator(start, end []byte) (tmdb.Iterator, error) {
+func (s *SafeBatchDB) Iterator(start, end []byte) (cometbft.Iterator, error) {
 	return s.db.Iterator(start, end)
 }
 
-func (s *SafeBatchDB) ReverseIterator(start, end []byte) (tmdb.Iterator, error) {
+func (s *SafeBatchDB) ReverseIterator(start, end []byte) (cometbft.Iterator, error) {
 	return s.db.ReverseIterator(start, end)
 }
 
@@ -93,7 +98,7 @@ func (s *SafeBatchDB) Close() error {
 	return s.db.Close()
 }
 
-func (s *SafeBatchDB) NewBatch() tmdb.Batch {
+func (s *SafeBatchDB) NewBatch() cometbft.Batch {
 	if s.batch != nil {
 		return NewSafeBatchNullify(s.batch)
 	} else {
