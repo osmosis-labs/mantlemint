@@ -5,11 +5,11 @@ import (
 	"fmt"
 
 	cbftjson "github.com/cometbft/cometbft/libs/json"
+	cbfttypes "github.com/cometbft/cometbft/types"
 	"github.com/osmosis-labs/mantlemint/db/safe_batch"
 	"github.com/osmosis-labs/mantlemint/indexer"
 	"github.com/osmosis-labs/mantlemint/mantlemint"
 	"github.com/osmosis-labs/osmosis/v25/app"
-	cbfttypes "github.com/tendermint/tendermint/types"
 )
 
 var cdc = app.MakeEncodingConfig()
